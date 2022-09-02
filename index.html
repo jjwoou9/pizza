@@ -90,24 +90,6 @@
   </script>
 
   <script>
-    /*
-    **평가 기준**
-    피자 상품 10개 목록 구성
-    피자 총 가격 계산 기능
-    장바구니 상품 담기 기능
-    */
-
-    /*
-    * row - 밑에 each 문으로 생성
-    * 클릭시 - 버튼색상 변경, 카트에 저장
-    * 카트에 저장돠면 합산 금액, 담겨진 피자 보여줌
-    *
-    * 피자 item에 필요한 data
-    * 이름, 가격, 사이즈
-    *
-    * 과제 주제 밑에 장바구니?
-    * */
-
     let pizzaList = [];
     let myCart = [];
 
@@ -123,7 +105,6 @@
     let cheese = {};
 
     $(function(){
-      console.log("ready");
       pizzaList.push(createMenu(fiveSeafood, '파이브 씨푸드 망고링', 36900, '/img/pizza/fiveSeafood.jpg'));
       pizzaList.push(createMenu(blackTiger, '블랙타이거 슈림프', 36900, '/img/pizza/blackTiger.jpg'));
       pizzaList.push(createMenu(masterTriple, '마스터 트리플 코스', 34900, '/img/pizza/masterTriple.jpg'));
@@ -184,8 +165,6 @@
       let selectPizzaName = $(obj).data("name");
       let selectPizzaPrice =  $(obj).data("price");
       let selectPizzaImg =  $(obj).data("img");
-      console.log('selectPizzaName : ', selectPizzaName);
-      console.log('myCart ', myCart.length);
 
       let isExist = false;
       if(myCart.length > 0){
@@ -231,8 +210,6 @@
     let priceWithComma = (price) => {
         return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
     }
-
-
 
   </script>
 </body>
