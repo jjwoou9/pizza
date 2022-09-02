@@ -26,16 +26,13 @@
       <div class="container">
         <h1 class="jumbotron-heading" style="margin-top: 20px">장바구니 </h1>
         <div style="min-height: 150px ">
-        <div class="row" id="cartArea" style="margin-top: 20px">
-
+          <div class="row" id="cartArea" style="margin-top: 20px"></div>
         </div>
-
-        </div>
-<!--        <a href="#" class="btn btn-primary my-2">Main call to action</a>
-        <a href="#" class="btn btn-secondary my-2">Secondary action</a>-->
         <strong style="font-size: xx-large">total : </strong>
-        <strong style="font-size: xx-large" id="totalPrice">50000</strong>
+        <strong style="font-size: xx-large" id="totalPrice">0</strong>
         <strong style="font-size: xx-large">₩</strong>
+
+        <a onclick="clearCart()" class="btn btn-secondary my-2" style="margin-left: 300px">장바구니 비우기 </a>
       </div>
     </section>
 
@@ -56,7 +53,7 @@
           <div class="d-flex justify-content-between align-items-center">
             <span style="font-weight: normal; font-size: medium">가격</span>
             <div class="btn-group">
-              <button type="button" class="btn btn-lg btn-block btn-danger" style="margin-right: 15px; border: 2px solid black; border-color: #e7e7e7;" >{price}</button>
+              <button type="button" class="btn btn-lg btn-block btn-danger" style="margin-right: 15px; border: 2px solid black; border-color: #e7e7e7;" >{cPrice}</button>
               <button type="button" class="btn btn-block " style="margin-right: 15px; border: 2px solid black; border-color: #e7e7e7;"
                       data-name="{name}"data-img="{img}" data-price="{price}" onclick="addToCart(this)" >장바구니</button>
             </div>
@@ -82,8 +79,8 @@
             <div style="width: 50px;">
               <h5 class="fw-normal mb-0">{count}</h5>
             </div>
-            <div style="width: 80px;">
-              <h5 class="mb-0">$900</h5>
+            <div style="width: 200px;">
+              <h5 class="mb-0">{cPrice} ₩</h5>
             </div>
             <a href="#!" style="color: #cecece; font-size: x-large; text-decoration: none">X</a>
           </div>
@@ -155,8 +152,13 @@
       let listHtml = '';
       let template = document.querySelector('#'+ templateId).innerHTML;
       $.each(list, (i, item) => {
+        item.cPrice = priceWithComma(item.price);
         listHtml += replaceTemplate(template, item);
       });
+
+      if(area == 'cartArea'){
+        $('#' + area).html('');
+      }
       $('#' + area).append(listHtml);
     }
 
@@ -171,7 +173,7 @@
     let createCartItem = (name, price, img, count) => {
       let cartItem = {};
       cartItem.name = name;
-      cartItem.pirce = price;
+      cartItem.price = price;
       cartItem.img = img;
       cartItem.count = count;
 
@@ -180,14 +182,36 @@
 
     let addToCart = (obj) => {
       let selectPizzaName = $(obj).data("name");
+      let selectPizzaPrice =  $(obj).data("price");
+      let selectPizzaImg =  $(obj).data("img");
       console.log('selectPizzaName : ', selectPizzaName);
       console.log('myCart ', myCart.length);
-      if(myCart.length > 0){
 
+      let isExist = false;
+      if(myCart.length > 0){
+        $.each(myCart, (i, item) => {
+          if(item.name == selectPizzaName){
+            item.count = item.count + 1;
+            item.price = selectPizzaPrice * item.count;
+            isExist = true;
+          }
+        });
+        if(!isExist){
+          myCart.push(createCartItem(selectPizzaName, selectPizzaPrice ,selectPizzaImg, 1 ));
+        }
       }
       else{
-        myCart.push(createCartItem);
+        myCart.push(createCartItem(selectPizzaName, selectPizzaPrice ,selectPizzaImg, 1 ));
       }
+
+      createComponent(myCart, 'template-cart-item' , 'cartArea');
+      calculateTotal();
+    }
+
+    let clearCart = () => {
+      $.each(myCart, (i, item) => {
+        myCart.pop();
+      });
 
       createComponent(myCart, 'template-cart-item' , 'cartArea');
       calculateTotal();
@@ -196,12 +220,16 @@
     let calculateTotal = () => {
       let totalPrice = 0;
       if(myCart.length > 0){
-        $.each(myCart, (i, pizza) => {
-          listHtml += replaceTemplate(template, pizza);
+        $.each(myCart, (i, item) => {
+          totalPrice += item.price;;
         });
       }
 
-      $('#totalPrice').text(totalPrice);
+      $('#totalPrice').text(priceWithComma(totalPrice));
+    }
+
+    let priceWithComma = (price) => {
+        return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
     }
 
 
